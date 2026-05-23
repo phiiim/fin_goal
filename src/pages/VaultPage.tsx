@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { formatThaiCurrency } from '@/lib/calculations'
+import { formatCurrency } from '@/lib/calculations'
 
 const VAULT_COLORS = [
   { label: 'Teal',   value: '#1D9E75' },
@@ -15,7 +15,7 @@ const VAULT_COLORS = [
 const VAULT_PRESETS = [
   { name: 'Emergency fund',     target: 90000,  reason: 'Cover 3 months of expenses',    icon: '🛡️' },
   { name: 'Car down payment',   target: 150000, reason: 'Honda City / Toyota Yaris',     icon: '🚗' },
-  { name: 'Condo down payment', target: 500000, reason: '10% down on ฿5M condo',         icon: '🏠' },
+  { name: 'Condo down payment', target: 500000, reason: '10% down on a condo',           icon: '🏠' },
   { name: 'Japan trip',         target: 80000,  reason: 'Flights + hotel + spending',    icon: '✈️' },
   { name: 'Wedding fund',       target: 200000, reason: 'Dream wedding budget',           icon: '💍' },
   { name: 'Investment seed',    target: 100000, reason: 'Start investing in stocks/ETF',  icon: '📈' },
@@ -23,6 +23,7 @@ const VAULT_PRESETS = [
 
 export default function VaultPage() {
   const { vaults, addVault, depositToVault, deleteVault, updateVault } = useAppStore()
+  const currency = useAppStore((s) => s.currency)
   const [adding, setAdding] = useState(false)
   const [form, setForm] = useState({ name: '', target: '', reason: '', color: '#1D9E75', locked: true })
   const [depositMap, setDepositMap] = useState<Record<string, string>>({})
@@ -67,11 +68,11 @@ export default function VaultPage() {
         <div className="grid grid-cols-2 gap-3">
           <Card className="bg-gray-50 border-0">
             <p className="text-xs text-gray-400 mb-1">Total vaulted</p>
-            <p className="text-lg font-semibold text-gray-900">{formatThaiCurrency(totalVaulted)}</p>
+            <p className="text-lg font-semibold text-gray-900">{formatCurrency(totalVaulted, currency)}</p>
           </Card>
           <Card className="bg-gray-50 border-0">
             <p className="text-xs text-gray-400 mb-1">Total target</p>
-            <p className="text-lg font-semibold text-gray-900">{formatThaiCurrency(totalTarget)}</p>
+            <p className="text-lg font-semibold text-gray-900">{formatCurrency(totalTarget, currency)}</p>
           </Card>
         </div>
       )}
@@ -88,7 +89,7 @@ export default function VaultPage() {
                 }`}>
                 <span className="text-base block mb-1">{p.icon}</span>
                 <p className="font-medium text-gray-900">{p.name}</p>
-                <p className="text-gray-400 mt-0.5">{formatThaiCurrency(p.target)}</p>
+                <p className="text-gray-400 mt-0.5">{formatCurrency(p.target, currency)}</p>
               </button>
             ))}
           </div>
@@ -97,7 +98,7 @@ export default function VaultPage() {
             <input placeholder="Vault name" value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
-            <input type="number" placeholder="Target amount (฿)" value={form.target}
+            <input type="number" placeholder={`Target amount (${currency})`} value={form.target}
               onChange={(e) => setForm({ ...form, target: e.target.value })}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
             <input placeholder="Why are you saving this? (optional)" value={form.reason}
@@ -161,20 +162,20 @@ export default function VaultPage() {
               </div>
 
               <div className="flex justify-between text-xs text-gray-500 mb-1.5">
-                <span>{formatThaiCurrency(v.currentAmount)} saved</span>
-                <span>{formatThaiCurrency(v.targetAmount)} goal</span>
+                <span>{formatCurrency(v.currentAmount, currency)} saved</span>
+                <span>{formatCurrency(v.targetAmount, currency)} goal</span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full mb-1">
                 <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: v.color }} />
               </div>
               <div className="flex justify-between mb-3">
                 <span className="text-xs font-medium" style={{ color: v.color }}>{pct}% there</span>
-                <span className="text-xs text-gray-400">{remaining > 0 ? `${formatThaiCurrency(remaining)} to go` : '✓ Goal reached!'}</span>
+                <span className="text-xs text-gray-400">{remaining > 0 ? `${formatCurrency(remaining, currency)} to go` : '✓ Goal reached!'}</span>
               </div>
 
               {!v.locked || v.currentAmount < v.targetAmount ? (
                 <div className="flex gap-2">
-                  <input type="number" placeholder="Deposit ฿"
+                  <input type="number" placeholder={`Deposit ${currency}`}
                     value={depositMap[v.id] || ''}
                     onChange={(e) => setDepositMap((m) => ({ ...m, [v.id]: e.target.value }))}
                     className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-400" />

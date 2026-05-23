@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { formatThaiCurrency } from '@/lib/calculations'
+import { formatCurrency } from '@/lib/calculations'
 
 function calcRetirement(
   currentAge: number,
@@ -55,6 +55,7 @@ function calcRetirement(
 
 export default function RetirementPage() {
   const { user, retirementPlan, setRetirementPlan } = useAppStore()
+  const currency = useAppStore((s) => s.currency)
   const [form, setForm] = useState({
     currentAge: String(retirementPlan?.currentAge || 25),
     retirementAge: String(retirementPlan?.retirementAge || 60),
@@ -117,7 +118,7 @@ export default function RetirementPage() {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Monthly expenses at retirement (฿)</label>
+            <label className="text-xs text-gray-500 block mb-1">Monthly expenses at retirement ({currency})</label>
             <input type="number" value={form.monthlyExpense} placeholder="e.g. 30,000"
               onChange={(e) => setForm({ ...form, monthlyExpense: e.target.value })}
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
@@ -125,7 +126,7 @@ export default function RetirementPage() {
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Current retirement savings (฿)</label>
+            <label className="text-xs text-gray-500 block mb-1">Current retirement savings ({currency})</label>
             <input type="number" value={form.currentSaved} placeholder="0"
               onChange={(e) => setForm({ ...form, currentSaved: e.target.value })}
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
@@ -155,7 +156,7 @@ export default function RetirementPage() {
           <Card className="border-2 border-gray-100">
             <p className="text-xs text-gray-400 mb-1">You need to save per month</p>
             <p className={`text-3xl font-semibold ${urgencyColor}`}>
-              {formatThaiCurrency(result.monthlySavingNeeded)}
+              {formatCurrency(result.monthlySavingNeeded, currency)}
             </p>
             <p className="text-xs text-gray-400 mt-1">
               Starting now, for {result.yearsToRetire} years at {form.returnRate}% return
@@ -164,9 +165,9 @@ export default function RetirementPage() {
 
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Total you\'ll need', val: formatThaiCurrency(result.totalNeeded), sub: `For ${result.yearsInRetirement} yrs retirement` },
-              { label: 'Your savings grow to', val: formatThaiCurrency(result.fvCurrent), sub: 'From current savings' },
-              { label: 'Gap to fill', val: formatThaiCurrency(result.gap), sub: 'Via monthly savings' },
+              { label: 'Total you\'ll need', val: formatCurrency(result.totalNeeded, currency), sub: `For ${result.yearsInRetirement} yrs retirement` },
+              { label: 'Your savings grow to', val: formatCurrency(result.fvCurrent, currency), sub: 'From current savings' },
+              { label: 'Gap to fill', val: formatCurrency(result.gap, currency), sub: 'Via monthly savings' },
               { label: 'Years to save', val: String(result.yearsToRetire), sub: 'Until retirement' },
             ].map((m) => (
               <Card key={m.label} className="bg-gray-50 border-0">
@@ -182,8 +183,8 @@ export default function RetirementPage() {
               <p className="text-sm font-medium text-amber-800 mb-1">⏰ The cost of waiting</p>
               <p className="text-xs text-amber-700 leading-relaxed">
                 If you had started 5 years earlier, you'd only need to save{' '}
-                <span className="font-semibold">{formatThaiCurrency(result.monthlyEarly)}/month</span> instead.
-                Every year you wait costs you <span className="font-semibold">{formatThaiCurrency(result.earlySaving * 12)}/year</span> more in contributions.
+                <span className="font-semibold">{formatCurrency(result.monthlyEarly, currency)}/month</span> instead.
+                Every year you wait costs you <span className="font-semibold">{formatCurrency(result.earlySaving * 12, currency)}/year</span> more in contributions.
               </p>
             </Card>
           )}

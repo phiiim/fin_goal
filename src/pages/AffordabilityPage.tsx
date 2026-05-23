@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { calculateAffordability, formatThaiCurrency, monthsToReadable } from '@/lib/calculations'
+import { calculateAffordability, formatCurrency, monthsToReadable } from '@/lib/calculations'
 import type { AffordabilityResult } from '@/types'
 
 const PRESETS = [
@@ -16,6 +16,7 @@ const PRESETS = [
 
 export default function AffordabilityPage() {
   const user = useAppStore((s) => s.user)
+  const currency = useAppStore((s) => s.currency)
   const [income, setIncome] = useState(String(user?.monthlyIncome || ''))
   const [expenses, setExpenses] = useState(String(user?.monthlyExpenses || ''))
   const [savings, setSavings] = useState(String(user?.currentSavings || ''))
@@ -48,7 +49,7 @@ export default function AffordabilityPage() {
       <h1 className="text-xl font-semibold text-gray-900">Can I afford it?</h1>
 
       <Card>
-        <h2 className="text-sm font-medium text-gray-700 mb-3">Your finances (฿/month)</h2>
+        <h2 className="text-sm font-medium text-gray-700 mb-3">Your finances ({currency}/month)</h2>
         <div className="space-y-3">
           {[
             { label: 'Monthly income', val: income, set: setIncome, ph: '35,000' },
@@ -75,7 +76,7 @@ export default function AffordabilityPage() {
               }`}>
               <span className="block text-lg mb-0.5">{p.icon}</span>
               <p className="font-medium leading-tight">{p.name}</p>
-              <p className="text-gray-400 mt-0.5">{formatThaiCurrency(p.price)}</p>
+              <p className="text-gray-400 mt-0.5">{formatCurrency(p.price, currency)}</p>
             </button>
           ))}
         </div>
@@ -84,7 +85,7 @@ export default function AffordabilityPage() {
             placeholder="Or type your own..." 
             className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
           <input type="number" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)}
-            placeholder="฿ price"
+            placeholder={`${currency} price`}
             className="w-28 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
         </div>
       </Card>
@@ -108,9 +109,9 @@ export default function AffordabilityPage() {
 
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Item cost', val: formatThaiCurrency(Number(itemPrice)), sub: `${result.pctOfIncome.toFixed(0)}% of monthly income` },
-              { label: 'Monthly free cash', val: formatThaiCurrency(result.monthlyFree), sub: 'after expenses' },
-              { label: 'Gap to cover', val: result.gap > 0 ? formatThaiCurrency(result.gap) : '฿0', sub: result.gap > 0 ? 'still needed' : 'already covered' },
+              { label: 'Item cost', val: formatCurrency(Number(itemPrice), currency), sub: `${result.pctOfIncome.toFixed(0)}% of monthly income` },
+              { label: 'Monthly free cash', val: formatCurrency(result.monthlyFree, currency), sub: 'after expenses' },
+              { label: 'Gap to cover', val: result.gap > 0 ? formatCurrency(result.gap, currency) : `0 ${currency}`, sub: result.gap > 0 ? 'still needed' : 'already covered' },
               { label: 'Months to goal', val: result.gap > 0 ? String(result.monthsNeeded) : '0', sub: 'saving 50% of free cash' },
             ].map((m) => (
               <Card key={m.label} className="bg-gray-50 border-0">

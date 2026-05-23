@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { formatThaiCurrency, monthsToReadable } from '@/lib/calculations'
+import { formatCurrency, monthsToReadable } from '@/lib/calculations'
 
 const PRESETS = [
   { name: 'Honda City',         price: 600000,  icon: '🚗', down: 0.2 },
   { name: 'Toyota Yaris',       price: 500000,  icon: '🚙', down: 0.2 },
-  { name: 'Condo (฿3M)',        price: 3000000, icon: '🏠', down: 0.1 },
-  { name: 'Condo (฿5M)',        price: 5000000, icon: '🏢', down: 0.1 },
+  { name: 'Condo (3M)',         price: 3000000, icon: '🏠', down: 0.1 },
+  { name: 'Condo (5M)',         price: 5000000, icon: '🏢', down: 0.1 },
   { name: 'Japan trip',         price: 80000,   icon: '✈️', down: 1   },
   { name: 'Europe trip',        price: 150000,  icon: '🌍', down: 1   },
   { name: 'iPhone 16 Pro',      price: 45000,   icon: '📱', down: 1   },
@@ -19,6 +19,7 @@ const PRESETS = [
 
 export default function GoalCalculatorPage() {
   const user = useAppStore((s) => s.user)
+  const currency = useAppStore((s) => s.currency)
   const monthlyFree = (user?.monthlyIncome || 0) - (user?.monthlyExpenses || 0)
   const currentSavings = user?.currentSavings || 0
 
@@ -69,7 +70,7 @@ export default function GoalCalculatorPage() {
               }`}>
               <span className="text-base block mb-0.5">{p.icon}</span>
               <p className="font-medium text-gray-800 leading-tight">{p.name}</p>
-              <p className="text-gray-400 mt-0.5">{formatThaiCurrency(p.price)}</p>
+              <p className="text-gray-400 mt-0.5">{formatCurrency(p.price, currency)}</p>
             </button>
           ))}
         </div>
@@ -78,7 +79,7 @@ export default function GoalCalculatorPage() {
           <input placeholder="Or type your own goal..."
             value={customName} onChange={(e) => { setCustomName(e.target.value); setSelectedPreset(null) }}
             className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
-          <input type="number" placeholder="฿ price"
+          <input type="number" placeholder={`${currency} price`}
             value={customPrice} onChange={(e) => { setCustomPrice(e.target.value); setSelectedPreset(null) }}
             className="w-28 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
         </div>
@@ -102,8 +103,8 @@ export default function GoalCalculatorPage() {
                   <span>Full price</span>
                 </div>
                 <div className="mt-2 bg-gray-50 rounded-xl p-3 text-sm">
-                  <p className="text-gray-600">You need to save: <span className="font-semibold text-gray-900">{formatThaiCurrency(amountNeeded)}</span></p>
-                  {downPct < 100 && <p className="text-xs text-gray-400 mt-0.5">Remaining {formatThaiCurrency(totalPrice - amountNeeded)} via loan/financing</p>}
+                  <p className="text-gray-600">You need to save: <span className="font-semibold text-gray-900">{formatCurrency(amountNeeded, currency)}</span></p>
+                  {downPct < 100 && <p className="text-xs text-gray-400 mt-0.5">Remaining {formatCurrency(totalPrice - amountNeeded, currency)} via loan/financing</p>}
                 </div>
               </div>
 
@@ -126,7 +127,7 @@ export default function GoalCalculatorPage() {
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${useExistingSavings ? 'left-5' : 'left-1'}`} />
                   </div>
                   <span className="text-sm text-gray-600">
-                    Use existing savings ({formatThaiCurrency(Math.min(currentSavings, amountNeeded))})
+                    Use existing savings ({formatCurrency(Math.min(currentSavings, amountNeeded), currency)})
                   </span>
                 </label>
               )}
@@ -136,7 +137,7 @@ export default function GoalCalculatorPage() {
           <Card className={`border ${feasibility.bg}`}>
             <div className="flex items-start gap-3">
               <div>
-                <p className={`text-2xl font-semibold ${feasibility.color}`}>{formatThaiCurrency(monthlyNeeded)}<span className="text-sm font-normal">/month</span></p>
+                <p className={`text-2xl font-semibold ${feasibility.color}`}>{formatCurrency(monthlyNeeded, currency)}<span className="text-sm font-normal">/month</span></p>
                 <p className="text-xs text-gray-500 mt-0.5">to reach {name ? `"${name}"` : 'your goal'} in {monthsToReadable(targetMonths)}</p>
               </div>
               <span className={`ml-auto text-xs font-medium px-2 py-1 rounded-full ${feasibility.color} ${feasibility.bg} border flex-shrink-0`}>
@@ -149,12 +150,12 @@ export default function GoalCalculatorPage() {
             <Card className="bg-gray-50 border-0">
               <p className="text-xs text-gray-400 mb-1">% of your free cash</p>
               <p className={`text-xl font-semibold ${pctOfFree > 80 ? 'text-red-500' : 'text-gray-900'}`}>{pctOfFree}%</p>
-              <p className="text-xs text-gray-400">You have {formatThaiCurrency(monthlyFree)}/mo free</p>
+              <p className="text-xs text-gray-400">You have {formatCurrency(monthlyFree, currency)}/mo free</p>
             </Card>
             <Card className="bg-gray-50 border-0">
               <p className="text-xs text-gray-400 mb-1">Gap to cover</p>
-              <p className="text-xl font-semibold text-gray-900">{formatThaiCurrency(gap)}</p>
-              <p className="text-xs text-gray-400">{useExistingSavings && alreadyHave > 0 ? `After ฿${alreadyHave.toLocaleString()} savings` : 'From scratch'}</p>
+              <p className="text-xl font-semibold text-gray-900">{formatCurrency(gap, currency)}</p>
+              <p className="text-xs text-gray-400">{useExistingSavings && alreadyHave > 0 ? `After ${formatCurrency(alreadyHave, currency)} savings` : 'From scratch'}</p>
             </Card>
           </div>
 
@@ -170,7 +171,7 @@ export default function GoalCalculatorPage() {
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-gray-500">{s.label}</span>
-                      <span className="font-medium text-gray-900">{formatThaiCurrency(s.monthly)}/mo</span>
+                      <span className="font-medium text-gray-900">{formatCurrency(s.monthly, currency)}/mo</span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full">
                       <div className={`h-1.5 rounded-full ${
@@ -194,7 +195,7 @@ export default function GoalCalculatorPage() {
               </p>
               <div className="space-y-1">
                 <p className="text-xs text-red-600">→ Realistic timeline: <span className="font-semibold">{monthsToReadable(realisticMonths)}</span></p>
-                <p className="text-xs text-red-600">→ Or earn <span className="font-semibold">{formatThaiCurrency(monthlyNeeded - monthlyFree)}/mo more</span> via freelance / side income</p>
+                <p className="text-xs text-red-600">→ Or earn <span className="font-semibold">{formatCurrency(monthlyNeeded - monthlyFree, currency)}/mo more</span> via freelance / side income</p>
               </div>
             </Card>
           )}

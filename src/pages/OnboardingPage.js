@@ -12,9 +12,9 @@ export default function OnboardingPage() {
     const setUser = useAppStore((s) => s.setUser);
     const switchUser = useAppStore((s) => s.switchUser);
     const deleteUser = useAppStore((s) => s.deleteUser);
-    const currency = useAppStore((s) => s.currency);
     const [step, setStep] = useState(0);
     const [form, setForm] = useState({ name: '', income: '', expenses: '', savings: '' });
+    const currency = useAppStore((s) => s.currency);
     const setCurrency = useAppStore((s) => s.setCurrency);
     const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
     const finish = () => {
@@ -53,7 +53,7 @@ export default function OnboardingPage() {
         },
     ];
     const s = steps[step];
-    return (_jsx("div", { className: "min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-brand-50 to-white px-6", children: _jsxs("div", { className: "w-full max-w-sm", children: [users.length > 0 && (_jsxs("div", { className: "mb-6 rounded-2xl border border-gray-100 bg-white/90 p-4 shadow-sm", children: [_jsx("p", { className: "text-xs font-medium uppercase tracking-[0.2em] text-gray-400", children: "Saved profiles" }), _jsx("div", { className: "mt-3 space-y-2", children: users.map((profile) => (_jsxs("div", { className: `w-full rounded-xl border px-3 py-3 transition-colors ${user?.id === profile.id ? 'border-brand-400 bg-brand-50' : 'border-gray-200 bg-white hover:border-gray-300'}`, children: [_jsxs("div", { className: "flex items-center justify-between gap-3", children: [_jsxs("div", { children: [_jsx("p", { className: "text-sm font-medium text-gray-900", children: profile.name }), _jsxs("p", { className: "text-xs text-gray-400", children: ["Income ", formatCurrency(profile.monthlyIncome, profile.currency ?? 'THB')] })] }), _jsxs("div", { className: "flex items-center gap-3", children: [user?.id === profile.id && _jsx("span", { className: "text-xs font-medium text-brand-500", children: "Active" }), _jsx("button", { onClick: (e) => {
+    return (_jsx("div", { className: "min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-brand-50 to-white px-6", children: _jsxs("div", { className: "w-full max-w-sm", children: [users.length > 0 && (_jsxs("div", { className: "mb-6 rounded-2xl border border-gray-100 bg-white/90 p-4 shadow-sm", children: [_jsx("p", { className: "text-xs font-medium uppercase tracking-[0.2em] text-gray-400", children: "Saved profiles" }), _jsx("div", { className: "mt-3 space-y-2", children: users.map((profile) => (_jsxs("div", { className: `w-full rounded-xl border px-3 py-3 transition-colors ${user?.id === profile.id ? 'border-brand-400 bg-brand-50' : 'border-gray-200 bg-white hover:border-gray-300'}`, children: [_jsxs("div", { className: "flex items-center justify-between gap-3", children: [_jsxs("div", { children: [_jsx("p", { className: "text-sm font-medium text-gray-900", children: profile.name }), _jsxs("p", { className: "text-xs text-gray-400", children: ["Income ", formatCurrency(profile.monthlyIncome, profile.currency ?? currency)] })] }), _jsxs("div", { className: "flex items-center gap-3", children: [user?.id === profile.id && _jsx("span", { className: "text-xs font-medium text-brand-500", children: "Active" }), _jsx("button", { onClick: (e) => {
                                                             e.stopPropagation();
                                                             if (!window.confirm(`Delete profile \"${profile.name}\"? This cannot be undone.`))
                                                                 return;

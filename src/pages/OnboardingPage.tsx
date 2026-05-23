@@ -27,6 +27,7 @@ export default function OnboardingPage() {
       monthlyExpenses: Number(form.expenses),
       currentSavings: Number(form.savings),
       createdAt: dayjs().toISOString(),
+      currency,
     })
     navigate('/')
   }
@@ -61,8 +62,8 @@ export default function OnboardingPage() {
       content: (
         <div className="space-y-4">
           {[
-            { key: 'income', label: 'Monthly income (฿)', placeholder: '35,000' },
-            { key: 'expenses', label: 'Monthly expenses (฿)', placeholder: '22,000' },
+            { key: 'income', label: `Monthly income (${currency})`, placeholder: '35,000' },
+            { key: 'expenses', label: `Monthly expenses (${currency})`, placeholder: '22,000' },
           ].map(({ key, label, placeholder }) => (
             <div key={key}>
               <label className="block text-sm text-gray-500 mb-1">{label}</label>
@@ -80,7 +81,7 @@ export default function OnboardingPage() {
       subtitle: "How much do you have saved right now?",
       content: (
         <div>
-          <label className="block text-sm text-gray-500 mb-1">Total savings (฿)</label>
+          <label className="block text-sm text-gray-500 mb-1">Total savings ({currency})</label>
           <input type="number" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-400"
             placeholder="50,000" value={form.savings} onChange={(e) => update('savings', e.target.value)} />
           <p className="text-xs text-gray-400 mt-2">Include all bank accounts, piggy banks, everything.</p>
@@ -107,7 +108,7 @@ export default function OnboardingPage() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{profile.name}</p>
-                      <p className="text-xs text-gray-400">Income {formatCurrency(profile.monthlyIncome, profile.id ? (profile as any).currency ?? 'THB' : 'THB')}</p>
+                      <p className="text-xs text-gray-400">Income {formatCurrency(profile.monthlyIncome, profile.currency ?? currency)}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       {user?.id === profile.id && <span className="text-xs font-medium text-brand-500">Active</span>}
