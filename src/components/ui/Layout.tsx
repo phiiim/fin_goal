@@ -22,6 +22,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const user = useAppStore((s) => s.user)
   const users = useAppStore((s) => s.users)
   const logout = useAppStore((s) => s.logout)
+  const deleteUser = useAppStore((s) => s.deleteUser)
   const [showMore, setShowMore] = useState(false)
   const isMorePage = moreNav.some(n => location.pathname === n.to)
 
@@ -56,6 +57,19 @@ export default function Layout({ children }: { children: ReactNode }) {
                 >
                   Log out
                 </button>
+                {user && (
+                  <button
+                    onClick={() => {
+                      if (!window.confirm(`Delete profile \"${user.name}\"? This cannot be undone.`)) return
+                      deleteUser(user.id)
+                      setShowMore(false)
+                      navigate('/onboarding')
+                    }}
+                    className="text-xs font-medium text-red-600"
+                  >
+                    Delete active profile
+                  </button>
+                )}
               </div>
             </div>
           </div>

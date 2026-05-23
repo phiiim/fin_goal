@@ -112,8 +112,9 @@ export default function OnboardingPage() {
                     <div className="flex items-center gap-3">
                       {user?.id === profile.id && <span className="text-xs font-medium text-brand-500">Active</span>}
                       <button
-                        onClick={() => {
-                          if (!confirm(`Delete profile \"${profile.name}\"? This cannot be undone.`)) return
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!window.confirm(`Delete profile \"${profile.name}\"? This cannot be undone.`)) return
                           deleteUser(profile.id)
                         }}
                         className="text-xs font-medium text-red-500"
