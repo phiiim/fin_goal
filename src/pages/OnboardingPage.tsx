@@ -32,8 +32,8 @@ export default function OnboardingPage() {
 
   const steps = [
     {
-      title: "สวัสดี! 👋",
-      subtitle: "FinGoal ช่วยให้คุณบรรลุเป้าหมายทางการเงิน",
+      title: "Hello! 👋",
+      subtitle: "FinGoal helps you reach your financial goals",
       content: (
         <div className="space-y-4">
           <div>

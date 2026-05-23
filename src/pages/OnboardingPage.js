@@ -29,8 +29,8 @@ export default function OnboardingPage() {
     };
     const steps = [
         {
-            title: "สวัสดี! 👋",
-            subtitle: "FinGoal ช่วยให้คุณบรรลุเป้าหมายทางการเงิน",
+            title: "Hello! 👋",
+            subtitle: "FinGoal helps you reach your financial goals",
             content: (_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "block text-sm text-gray-500 mb-1", children: "Your name" }), _jsx("input", { className: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-400", placeholder: "e.g. Ploy", value: form.name, onChange: (e) => update('name', e.target.value) })] }), _jsxs("div", { children: [_jsx("label", { className: "block text-sm text-gray-500 mb-1", children: "Currency" }), _jsxs("select", { className: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm", value: currency, onChange: (e) => setCurrency(e.target.value), children: [_jsx("option", { value: "THB", children: "Thai Baht (THB)" }), _jsx("option", { value: "USD", children: "US Dollar (USD)" }), _jsx("option", { value: "EUR", children: "Euro (EUR)" }), _jsx("option", { value: "JPY", children: "Japanese Yen (JPY)" })] })] })] })),
             canNext: true,
         },
