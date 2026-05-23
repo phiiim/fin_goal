@@ -88,7 +88,7 @@ const buildStateForUser = (
   nextUser: User | null,
   nextUserDataById: Record<string, UserScopedState>
 ) => {
-  const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null, state.user?.id === nextUser?.id ? state.currency ?? 'THB' : 'THB')
+  const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null, state.currency ?? 'THB')
 
     return {
     users: nextUser && !state.users.some((user) => user.id === nextUser.id)
