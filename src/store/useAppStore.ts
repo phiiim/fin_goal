@@ -47,12 +47,12 @@ interface AppState {
   getCategorySpend: (month?: string) => Record<string, number>
 }
 
-const createEmptyUserState = (): UserScopedState => ({
+const createEmptyUserState = (currency = 'THB'): UserScopedState => ({
   goals: [],
   transactions: [],
   vaults: [],
   retirementPlan: null,
-  currency: 'THB',
+  currency,
 })
 
 const persistActiveUserState = (state: Pick<AppState, 'activeUserId' | 'goals' | 'transactions' | 'vaults' | 'retirementPlan' | 'userDataById' | 'currency'>) => {
@@ -70,25 +70,25 @@ const persistActiveUserState = (state: Pick<AppState, 'activeUserId' | 'goals' |
   }
 }
 
-const loadUserState = (userDataById: Record<string, UserScopedState>, userId: string | null) => {
-  if (!userId) return createEmptyUserState()
+const loadUserState = (userDataById: Record<string, UserScopedState>, userId: string | null, fallbackCurrency = 'THB') => {
+  if (!userId) return createEmptyUserState(fallbackCurrency)
   const s = userDataById[userId]
-  if (!s) return createEmptyUserState()
+  if (!s) return createEmptyUserState(fallbackCurrency)
   return {
     goals: s.goals ?? [],
     transactions: s.transactions ?? [],
     vaults: s.vaults ?? [],
     retirementPlan: s.retirementPlan ?? null,
-    currency: s.currency ?? 'THB',
+    currency: s.currency ?? fallbackCurrency,
   }
 }
 
 const buildStateForUser = (
-  state: Pick<AppState, 'users' | 'user' | 'activeUserId' | 'goals' | 'transactions' | 'vaults' | 'retirementPlan' | 'userDataById'>,
+  state: Pick<AppState, 'users' | 'user' | 'activeUserId' | 'goals' | 'transactions' | 'vaults' | 'retirementPlan' | 'userDataById' | 'currency'>,
   nextUser: User | null,
   nextUserDataById: Record<string, UserScopedState>
 ) => {
-  const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null)
+  const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null, state.user?.id === nextUser?.id ? state.currency ?? 'THB' : 'THB')
 
     return {
     users: nextUser && !state.users.some((user) => user.id === nextUser.id)
@@ -184,7 +184,9 @@ export const useAppStore = create<AppState>()(
       }),
 
       setCurrency: (currency) => set((state) => {
-        if (!state.user) return state
+        if (!state.user) {
+          return { currency }
+        }
 
         const userId = state.user.id
 
