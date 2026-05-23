@@ -37,7 +37,7 @@ export default function AffordabilityPage() {
     const scoreBg = result
         ? result.score >= 80 ? 'bg-green-50 border-green-200' : result.score >= 50 ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'
         : '';
-    return (_jsxs("div", { className: "space-y-4", children: [_jsx("h1", { className: "text-xl font-semibold text-gray-900", children: "Can I afford it? (Reality check eiei)" }), _jsxs(Card, { children: [_jsx("h2", { className: "text-sm font-medium text-gray-700 mb-3", children: "Your finances (\u0E3F/month)" }), _jsx("div", { className: "space-y-3", children: [
+    return (_jsxs("div", { className: "space-y-4", children: [_jsx("h1", { className: "text-xl font-semibold text-gray-900", children: "Can I afford it?" }), _jsxs(Card, { children: [_jsx("h2", { className: "text-sm font-medium text-gray-700 mb-3", children: "Your finances (\u0E3F/month)" }), _jsx("div", { className: "space-y-3", children: [
                             { label: 'Monthly income', val: income, set: setIncome, ph: '35,000' },
                             { label: 'Monthly expenses', val: expenses, set: setExpenses, ph: '22,000' },
                             { label: 'Current savings', val: savings, set: setSavings, ph: '50,000' },
