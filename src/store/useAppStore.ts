@@ -89,7 +89,11 @@ const buildStateForUser = (
   nextUser: User | null,
   nextUserDataById: Record<string, UserScopedState>
 ) => {
-  const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null, state.currency ?? 'THB')
+  const scopedState = loadUserState(
+    nextUserDataById,
+    nextUser?.id ?? null,
+    nextUser?.currency ?? state.currency ?? 'THB'
+  )
 
     return {
     users: nextUser && !state.users.some((user) => user.id === nextUser.id)
@@ -164,7 +168,7 @@ export const useAppStore = create<AppState>()(
         }
 
         const nextUser = users[0] ?? null
-        const nextUserState = loadUserState(restUserData, nextUser?.id ?? null)
+        const nextUserState = loadUserState(restUserData, nextUser?.id ?? null, nextUser?.currency ?? 'THB')
 
         return {
           users,
