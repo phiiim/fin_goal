@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: '/phiiim/',
+  base: '/fin_goal/',
   plugins: [react()],
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') }
