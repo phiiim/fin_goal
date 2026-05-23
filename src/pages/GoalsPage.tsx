@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { formatThaiCurrency, monthsToReadable } from '@/lib/calculations'
+import { formatCurrency, monthsToReadable } from '@/lib/calculations'
 import type { GoalCategory } from '@/types'
 import dayjs from 'dayjs'
 
@@ -17,6 +17,7 @@ const GOAL_PRESETS = [
 
 export default function GoalsPage() {
   const { goals, addGoal, updateGoal, user, deleteGoal } = useAppStore()
+  const currency = useAppStore((s) => s.currency)
   const [adding, setAdding] = useState(false)
   const [form, setForm] = useState({ name: '', amount: '', months: '12' })
   const monthlyFree = (user?.monthlyIncome || 0) - (user?.monthlyExpenses || 0)
@@ -51,7 +52,7 @@ export default function GoalsPage() {
               <button key={p.name} onClick={() => setForm({ ...form, name: p.name, amount: String(p.amount) })}
                 className="text-left p-2 rounded-lg border border-gray-200 text-xs hover:border-brand-400 transition-colors">
                 <p className="font-medium">{p.name}</p>
-                <p className="text-gray-400">{formatThaiCurrency(p.amount)}</p>
+                <p className="text-gray-400">{formatCurrency(p.amount, currency)}</p>
               </button>
             ))}
           </div>
@@ -59,7 +60,7 @@ export default function GoalsPage() {
             <input className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-400"
               placeholder="Goal name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <input type="number" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-400"
-              placeholder="Target amount (฿)" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+                  placeholder={`Target amount (${currency})`} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
             <div>
               <label className="text-xs text-gray-500">Target: {form.months} months</label>
               <input type="range" min="1" max="60" value={form.months} className="w-full mt-1"
@@ -71,7 +72,7 @@ export default function GoalsPage() {
             {form.amount && (
               <div className="bg-brand-50 rounded-xl p-3 text-sm">
                 <p className="text-brand-600 font-medium">
-                  Save {formatThaiCurrency(Number(form.amount) / Number(form.months))}/month
+                  Save {formatCurrency(Number(form.amount) / Number(form.months), currency)}/month
                 </p>
                 <p className="text-brand-400 text-xs mt-0.5">
                   {Math.round(((Number(form.amount) / Number(form.months)) / Math.max(monthlyFree, 1)) * 100)}% of your free cash
@@ -103,7 +104,7 @@ export default function GoalsPage() {
               <div>
                 <p className="font-medium text-gray-900">{g.name}</p>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {formatThaiCurrency(g.currentAmount)} of {formatThaiCurrency(g.targetAmount)}
+                  {formatCurrency(g.currentAmount, currency)} of {formatCurrency(g.targetAmount, currency)}
                 </p>
               </div>
               <span className={`text-xs px-2 py-1 rounded-full ${pct >= 100 ? 'bg-green-100 text-green-600' : 'bg-brand-50 text-brand-600'}`}>
@@ -114,11 +115,11 @@ export default function GoalsPage() {
               <div className="h-2 bg-brand-400 rounded-full" style={{ width: `${pct}%` }} />
             </div>
             <div className="flex justify-between text-xs text-gray-400 mb-3">
-              <span>Save {formatThaiCurrency(monthlyNeeded)}/mo to stay on track</span>
+              <span>Save {formatCurrency(monthlyNeeded, currency)}/mo to stay on track</span>
               <span>{monthsToReadable(dayjs(g.targetDate).diff(dayjs(), 'month'))} left</span>
             </div>
             <div className="flex gap-2">
-              <input type="number" placeholder="Add savings (฿)" id={`add-${g.id}`}
+              <input type="number" placeholder={`Add savings (${currency})`} id={`add-${g.id}`}
                 className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-400" />
               <Button variant="secondary" className="text-xs" onClick={() => {
                 const el = document.getElementById(`add-${g.id}`) as HTMLInputElement

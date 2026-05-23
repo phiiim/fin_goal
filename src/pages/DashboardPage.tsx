@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
-import { formatThaiCurrency } from '@/lib/calculations'
+import { formatCurrency } from '@/lib/calculations'
 import { useNavigate } from 'react-router-dom'
 
 export default function DashboardPage() {
   const { user, goals, getMonthlySpend, updateUser } = useAppStore()
+  const currency = useAppStore((s) => s.currency)
   const navigate = useNavigate()
   const monthlySpend = getMonthlySpend()
   const monthlyFree = (user?.monthlyIncome || 0) - (user?.monthlyExpenses || 0)
@@ -43,10 +44,10 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-3">
         {[
-          { key: 'income', label: 'Monthly income', value: formatThaiCurrency(user?.monthlyIncome || 0), sub: 'per month' },
-          { key: 'expenses', label: 'Free cash', value: formatThaiCurrency(monthlyFree), sub: 'after expenses', ok: monthlyFree > 0 },
-          { key: 'savings', label: 'Savings', value: formatThaiCurrency(user?.currentSavings || 0), sub: 'total saved' },
-          { key: 'spent', label: 'Spent this month', value: formatThaiCurrency(monthlySpend), sub: 'tracked' },
+          { key: 'income', label: 'Monthly income', value: formatCurrency(user?.monthlyIncome || 0, currency), sub: 'per month' },
+          { key: 'expenses', label: 'Free cash', value: formatCurrency(monthlyFree, currency), sub: 'after expenses', ok: monthlyFree > 0 },
+          { key: 'savings', label: 'Savings', value: formatCurrency(user?.currentSavings || 0, currency), sub: 'total saved' },
+          { key: 'spent', label: 'Spent this month', value: formatCurrency(monthlySpend, currency), sub: 'tracked' },
         ].map((m) => (
           <Card key={m.label} className="bg-gray-50 border-0">
             <div className="flex justify-between items-start">
@@ -105,8 +106,8 @@ export default function DashboardPage() {
                     <div className="h-1.5 bg-brand-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                   <div className="flex justify-between mt-1">
-                    <p className="text-xs text-gray-400">{formatThaiCurrency(g.currentAmount)}</p>
-                    <p className="text-xs text-gray-400">{formatThaiCurrency(g.targetAmount)}</p>
+                    <p className="text-xs text-gray-400">{formatCurrency(g.currentAmount, currency)}</p>
+                    <p className="text-xs text-gray-400">{formatCurrency(g.targetAmount, currency)}</p>
                   </div>
                 </Card>
               )

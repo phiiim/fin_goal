@@ -5,6 +5,7 @@ export interface User {
   monthlyExpenses: number
   currentSavings: number
   createdAt: string
+  currency?: string
 }
 
 export interface Goal {

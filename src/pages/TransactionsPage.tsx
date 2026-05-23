@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { formatThaiCurrency } from '@/lib/calculations'
+import { formatCurrency } from '@/lib/calculations'
 import type { TransactionCategory } from '@/types'
 import dayjs from 'dayjs'
 
@@ -20,6 +20,7 @@ const CATEGORIES: { value: TransactionCategory; label: string; icon: string }[] 
 
 export default function TransactionsPage() {
   const { transactions, addTransaction, deleteTransaction, user, getCategorySpend } = useAppStore()
+  const currency = useAppStore((s) => s.currency)
   const [adding, setAdding] = useState(false)
   const [form, setForm] = useState({
     type: 'expense' as 'income' | 'expense',
@@ -63,7 +64,7 @@ export default function TransactionsPage() {
             ))}
           </div>
           <div className="space-y-3">
-            <input type="number" placeholder="Amount (฿)" value={form.amount}
+            <input type="number" placeholder={`Amount (${currency})`} value={form.amount}
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400" />
             <input placeholder="Merchant / from" value={form.merchant}
@@ -99,7 +100,7 @@ export default function TransactionsPage() {
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-0.5">
                       <span className="text-gray-600">{info?.label || cat}</span>
-                      <span className="font-medium">{formatThaiCurrency(amount)}</span>
+                      <span className="font-medium">{formatCurrency(amount, currency)}</span>
                     </div>
                     <div className="h-1 bg-gray-100 rounded-full">
                       <div className="h-1 bg-brand-400 rounded-full" style={{ width: `${(amount/totalSpend)*100}%` }} />
@@ -132,7 +133,7 @@ export default function TransactionsPage() {
               </div>
               <div className="text-right">
                 <p className={`text-sm font-medium ${tx.type === 'income' ? 'text-green-600' : 'text-gray-900'}`}>
-                  {tx.type === 'income' ? '+' : '-'}{formatThaiCurrency(tx.amount)}
+                  {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, currency)}
                 </p>
                 <button onClick={() => deleteTransaction(tx.id)} className="text-xs text-gray-300 hover:text-red-400">remove</button>
               </div>

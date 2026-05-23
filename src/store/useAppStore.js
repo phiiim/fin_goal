@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import dayjs from 'dayjs';
-const createEmptyUserState = () => ({
+const createEmptyUserState = (currency = 'THB') => ({
     goals: [],
     transactions: [],
     vaults: [],
     retirementPlan: null,
-    currency: 'THB',
+    currency,
 });
 const persistActiveUserState = (state) => {
     if (!state.activeUserId)
@@ -22,22 +22,22 @@ const persistActiveUserState = (state) => {
         },
     };
 };
-const loadUserState = (userDataById, userId) => {
+const loadUserState = (userDataById, userId, fallbackCurrency = 'THB') => {
     if (!userId)
-        return createEmptyUserState();
+        return createEmptyUserState(fallbackCurrency);
     const s = userDataById[userId];
     if (!s)
-        return createEmptyUserState();
+        return createEmptyUserState(fallbackCurrency);
     return {
         goals: s.goals ?? [],
         transactions: s.transactions ?? [],
         vaults: s.vaults ?? [],
         retirementPlan: s.retirementPlan ?? null,
-        currency: s.currency ?? 'THB',
+        currency: s.currency ?? fallbackCurrency,
     };
 };
 const buildStateForUser = (state, nextUser, nextUserDataById) => {
-    const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null);
+    const scopedState = loadUserState(nextUserDataById, nextUser?.id ?? null, state.currency ?? 'THB');
     return {
         users: nextUser && !state.users.some((user) => user.id === nextUser.id)
             ? [...state.users, nextUser]
@@ -127,8 +127,9 @@ export const useAppStore = create()(persist((set, get) => ({
         };
     }),
     setCurrency: (currency) => set((state) => {
-        if (!state.user)
-            return state;
+        if (!state.user) {
+            return { currency };
+        }
         const userId = state.user.id;
         return {
             currency,
