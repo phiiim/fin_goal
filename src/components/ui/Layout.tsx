@@ -21,6 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
   const users = useAppStore((s) => s.users)
+  const logout = useAppStore((s) => s.logout)
   const [showMore, setShowMore] = useState(false)
   const isMorePage = moreNav.some(n => location.pathname === n.to)
 
@@ -35,15 +36,27 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p className="text-sm font-medium text-gray-900">{user?.name || 'No profile'}</p>
             <div className="mt-2 flex items-center justify-between gap-2">
               <p className="text-xs text-gray-400">{users.length} saved profile{users.length === 1 ? '' : 's'}</p>
-              <button
-                onClick={() => {
-                  setShowMore(false)
-                  navigate('/onboarding')
-                }}
-                className="text-xs font-medium text-brand-500"
-              >
-                Manage users
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setShowMore(false)
+                    navigate('/onboarding')
+                  }}
+                  className="text-xs font-medium text-brand-500"
+                >
+                  Manage users
+                </button>
+                <button
+                  onClick={() => {
+                    logout()
+                    setShowMore(false)
+                    navigate('/onboarding')
+                  }}
+                  className="text-xs font-medium text-red-500"
+                >
+                  Log out
+                </button>
+              </div>
             </div>
           </div>
           {moreNav.map((n) => (

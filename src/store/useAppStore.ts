@@ -24,6 +24,7 @@ interface AppState {
 
   setUser: (user: User) => void
   switchUser: (userId: string) => void
+  logout: () => void
   deleteUser: (userId: string) => void
   updateUser: (updates: Partial<User>) => void
   setCurrency: (currency: string) => void
@@ -138,6 +139,16 @@ export const useAppStore = create<AppState>()(
 
         return buildStateForUser(state, nextUser, userDataById)
       }),
+
+      logout: () => set((state) => ({
+        userDataById: persistActiveUserState(state),
+        activeUserId: null,
+        user: null,
+        goals: [],
+        transactions: [],
+        vaults: [],
+        retirementPlan: null,
+      })),
 
       deleteUser: (userId) => set((state) => {
         const userDataById = persistActiveUserState(state)

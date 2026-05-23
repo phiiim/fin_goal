@@ -11,6 +11,7 @@ export default function OnboardingPage() {
   const user = useAppStore((s) => s.user)
   const setUser = useAppStore((s) => s.setUser)
   const switchUser = useAppStore((s) => s.switchUser)
+  const deleteUser = useAppStore((s) => s.deleteUser)
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({ name: '', income: '', expenses: '', savings: '' })
   const currency = useAppStore((s) => s.currency)
@@ -99,22 +100,38 @@ export default function OnboardingPage() {
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-gray-400">Saved profiles</p>
             <div className="mt-3 space-y-2">
               {users.map((profile) => (
-                <button
+                <div
                   key={profile.id}
-                  onClick={() => {
-                    switchUser(profile.id)
-                    navigate('/')
-                  }}
-                  className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${user?.id === profile.id ? 'border-brand-400 bg-brand-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                  className={`w-full rounded-xl border px-3 py-3 transition-colors ${user?.id === profile.id ? 'border-brand-400 bg-brand-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{profile.name}</p>
                       <p className="text-xs text-gray-400">Income {formatCurrency(profile.monthlyIncome, profile.id ? (profile as any).currency ?? 'THB' : 'THB')}</p>
                     </div>
-                    {user?.id === profile.id && <span className="text-xs font-medium text-brand-500">Active</span>}
+                    <div className="flex items-center gap-3">
+                      {user?.id === profile.id && <span className="text-xs font-medium text-brand-500">Active</span>}
+                      <button
+                        onClick={() => {
+                          if (!confirm(`Delete profile \"${profile.name}\"? This cannot be undone.`)) return
+                          deleteUser(profile.id)
+                        }}
+                        className="text-xs font-medium text-red-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                </button>
+                  <button
+                    onClick={() => {
+                      switchUser(profile.id)
+                      navigate('/')
+                    }}
+                    className="mt-2 text-xs font-medium text-brand-500"
+                  >
+                    Switch to this profile
+                  </button>
+                </div>
               ))}
             </div>
             <p className="text-xs text-gray-400 mt-3">Switch profiles above or create a fresh one below.</p>

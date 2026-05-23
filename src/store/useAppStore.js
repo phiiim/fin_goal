@@ -79,6 +79,15 @@ export const useAppStore = create()(persist((set, get) => ({
             return state;
         return buildStateForUser(state, nextUser, userDataById);
     }),
+    logout: () => set((state) => ({
+        userDataById: persistActiveUserState(state),
+        activeUserId: null,
+        user: null,
+        goals: [],
+        transactions: [],
+        vaults: [],
+        retirementPlan: null,
+    })),
     deleteUser: (userId) => set((state) => {
         const userDataById = persistActiveUserState(state);
         const users = state.users.filter((user) => user.id !== userId);
